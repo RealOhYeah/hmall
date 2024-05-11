@@ -1,0 +1,19 @@
+server:
+  port: 8081
+feign:
+  okhttp:
+    enabled: true # 开启OKHttp连接池支持
+  sentinel:
+    enabled: true # 开启Feign对Sentinel的整合
+#    rules:
+#      "default":
+#        - grade: 0
+#          count: 200.0
+#          time-window: 20
+#          slow-ratio-threshold: 0.5
+hm:
+  swagger:
+    title: 商品管理服务接口文档
+    package: com.hmall.item.controller
+  db:
+    database: hm-item

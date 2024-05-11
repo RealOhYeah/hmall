@@ -1,0 +1,39 @@
+server:
+  port: 8082
+spring:
+  cloud:
+    sentinel:
+      transport:
+        dashboard: localhost:8090
+      http-method-specify: true # 开启请求方式前缀
+      datasource:
+        ds1:
+          nacos:
+            server-addr: 192.168.88.132:8848
+            data-id: degrade.json
+            group-id: DEFAULT_GROUP
+            data-type: json
+            rule-type: degrade
+
+feign:
+  okhttp:
+    enabled: true # 开启OKHttp功能
+  sentinel:
+    enabled: true # 开启Feign的sentinel整合
+    rules:
+      "default":
+        - grade: 0
+          count: 200.0
+          time-window: 20
+          slow-ratio-threshold: 0.5
+
+
+hm:
+  db:
+    database: hm-cart
+  swagger:
+    title: "黑马商城购物车接口文档"
+    package: com.hmall.cart.controller
+
+
+
