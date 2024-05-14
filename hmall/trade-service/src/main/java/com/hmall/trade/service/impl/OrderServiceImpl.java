@@ -44,8 +44,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private final IOrderDetailService detailService;
     private final CartClient cartClient;
 
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
+    private final RabbitTemplate rabbitTemplate;
 
     @Override
     @GlobalTransactional
@@ -100,7 +99,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             log.error("清理购物车的消息发送异常", e);
         }
 
-        // 5.延迟检测订单状态消息
+        // 5.延迟检测订单状态消息(每隔一段时间就会发送消息)
         try {
             MultiDelayMessage<Long> msg = MultiDelayMessage.of(order.getId(), 10000L, 10000L, 10000L, 15000L, 15000L, 30000L, 30000L);
             rabbitTemplate.convertAndSend(
@@ -120,6 +119,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setStatus(2);
         order.setPayTime(LocalDateTime.now());
         updateById(order);
+    }
+
+    @Override
+    @GlobalTransactional
+    public void cancelOrder(Long orderId) {
+        // 1.取消订单
+        lambdaUpdate()
+                .set(Order::getStatus, 5)
+                .set(Order::getCloseTime, LocalDateTime.now())
+                .eq(Order::getId, orderId)
+                .update();
+
+        // TODO 2.恢复库存
     }
 
     private List<OrderDetail> buildDetails(Long orderId, List<ItemDTO> items, Map<Long, Integer> numMap) {
