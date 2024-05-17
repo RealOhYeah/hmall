@@ -7,6 +7,7 @@ import com.hmall.common.utils.CollUtils;
 import com.hmall.item.domain.po.Item;
 import com.hmall.item.domain.po.ItemDoc;
 import com.hmall.item.service.IItemService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
@@ -28,6 +29,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 @SpringBootTest(properties = "spring.profiles.active=application-local")
 public class ElasticDocumentTest {
 
