@@ -15,6 +15,7 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.sort.SortOrder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,6 +43,32 @@ public class ElasticSearchTest {
     @Test
     void test() {
         System.out.println("连接信息" + client.toString());
+    }
+
+    /**
+     * 分页查询
+     * @throws IOException
+     */
+    @Test
+    void testPageAndSort() throws IOException {
+        // 模拟前端传递过来的分页参数
+        int pageNo = 1, pageSize = 5;
+
+        // 1.创建Request
+        SearchRequest request = new SearchRequest("items");
+        // 2.组织请求参数
+        // 2.1.搜索条件参数
+        request.source().query(QueryBuilders.matchQuery("name", "脱脂牛奶"));
+        // 2.2.排序参数
+        request.source()
+                .sort("sold", SortOrder.DESC)
+                .sort("price", SortOrder.ASC);
+        // 2.3.分页参数
+        request.source().from((pageNo - 1) * pageSize).size(pageSize);
+        // 3.发送请求
+        SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+        // 4.解析响应
+        handleResponse(response);
     }
 
     /**
